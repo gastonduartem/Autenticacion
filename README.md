@@ -37,31 +37,31 @@ registro, login, roles, seguridad con cookies o JWT, CSRF, hashing, control de f
 
 ## 📁 Estructura del proyecto
 
-passport-inc/
-├─ src/
-│ ├─ db.js
-│ ├─ schema.sql
-│ ├─ server.js
-│ ├─ security/
-│ │ ├─ auth-cookie.js
-│ │ ├─ auth-jwt.js
-│ │ ├─ csrf.js
-│ │ └─ rate-limit.js (opcional futuro)
-│ ├─ routes/
-│ │ ├─ auth-cookie.js
-│ │ ├─ auth-jwt.js
-│ │ ├─ admin.js
-│ │ └─ me.js
-│ └─ views/
-│ ├─ register-cookie.html
-│ ├─ login-cookie.html
-│ ├─ register-jwt.html
-│ ├─ login-jwt.html
-│
-├─ package.json
-└─ README.md
-
----
+- **passport-inc/**
+  - `package.json`
+  - `README.md`
+  - **src/**
+    - `server.js`
+    - `schema.sql`
+    - `db.js`
+    - **security/**
+      - `auth-cookie.js`
+      - `auth-jwt.js`
+      - `csrf.js`
+      - `rate-limit.js` _(opcional futuro)_
+    - **routes/**
+      - `auth-cookie.js`
+      - `auth-jwt.js`
+      - `admin.js`
+      - `me.js`
+    - **views/**
+      - `index.html`
+      - `admin.html`
+      - `admin.js`
+      - `register-cookie.html`, `register-cookie.js`
+      - `login-cookie.html`, `login-cookie.js`
+      - `register-jwt.html`, `register-jwt.js`
+      - `login-jwt.html`, `login-jwt.js`
 
 ## ⚙️ Instalación
 
