@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Codificación para soportar caracteres latinos -->
+  <meta charset="UTF-8" />
+  <!-- Título de la pestaña -->
+  <title>Panel Admin — PassPort Inc</title>
+  <!-- Estilos mínimos embebidos (sin librerías) -->
+  <style>
+    /* Reset básico */
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #0b1020; color: #e9edf5; }
+    /* Contenedor central */
+    .wrap { max-width: 1000px; margin: 32px auto; padding: 16px; }
+    /* Tarjeta visual */
+    .card { background: #121a2f; border: 1px solid #223054; border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    p  { margin: 4px 0 12px; color: #93a0bb; }
+    /* Contenedores de controles */
+    .row { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin: 12px 0; }
+    label { display:block; font-size: 14px; margin-bottom: 6px; color: #c3cee6; }
+    input, select, textarea, button { font-size: 14px; }
+    input, select, textarea { background:#0f1830; color:#e9edf5; border:1px solid #223054; border-radius:8px; padding:8px; }
+    textarea { width: 100%; }
+    button { background:#0f1830; color:#e9edf5; border:1px solid #2d467a; border-radius:10px; padding:10px 14px; cursor:pointer; }
+    button:hover { background:#0e1a3a; }
+    /* Tabla simple */
+    table { width:100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { border-bottom:1px solid #223054; padding: 8px; text-align:left; font-size: 14px; }
+    th { color:#c3cee6; }
+    /* Mensajes de salida */
+    pre { background:#0f1830; border:1px solid #223054; border-radius:10px; padding:10px; overflow:auto; }
+    .muted { color:#93a0bb; font-size: 12px; }
+    .mode { display:flex; gap: 18px; align-items:center; margin: 8px 0 12px; }
+    .tag { display:inline-block; padding:2px 8px; border:1px solid #2d467a; border-radius:999px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <!-- Contenedor principal -->
+  <div class="wrap">
+    <!-- Tarjeta -->
+    <div class="card">
+      <!-- Título -->
+      <h1>Panel de Administración</h1>
+      <!-- Descripción -->
+      <p>Listá usuarios y cambiá roles usando <span class="tag">Cookies</span> o <span class="tag">JWT</span>.</p>
+
+      <!-- Selector de modo -->
+      <div class="mode">
+        <!-- Radio para seleccionar Cookies -->
+        <label><input type="radio" name="mode" value="cookie" id="mode-cookie" checked /> Usar Cookies</label>
+        <!-- Radio para seleccionar JWT -->
+        <label><input type="radio" name="mode" value="jwt" id="mode-jwt" /> Usar JWT</label>
+      </div>
+
+      <!-- Configuración específica de JWT (token) -->
+      <div id="jwt-config" style="display:none">
+        <!-- Etiqueta para el textarea -->
+        <label>Token JWT (Authorization: Bearer):</label>
+        <!-- Área donde se pega el token -->
+        <textarea id="jwt" rows="3" placeholder="Pega aquí tu access_token"></textarea>
+        <!-- Nota de ayuda -->
+        <div class="muted">Obtené un token en <code>/login-jwt.html</code> o <code>/register-jwt.html</code>.</div>
+      </div>
+
+      <!-- Configuración específica de Cookies (recordatorio CSRF) -->
+      <div id="cookie-config">
+        <!-- Recordatorio para login con cookies -->
+        <div class="muted">Asegurate de haber iniciado sesión en <code>/login-cookie.html</code>. El navegador debe tener las cookies <code>sid</code> y <code>csrfToken</code>.</div>
+      </div>
+
+      <!-- Controles de acciones -->
+      <div class="row">
+        <!-- Botón para listar usuarios -->
+        <button id="btn-list">Listar usuarios</button>
+
+        <!-- Inputs para cambiar rol -->
+        <div>
+          <!-- ID de usuario a modificar -->
+          <label for="userId">ID de usuario</label>
+          <input id="userId" type="number" placeholder="ej. 2" />
+        </div>
+        <div>
+          <!-- Rol destino -->
+          <label for="newRole">Nuevo rol</label>
+          <select id="newRole">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+        <!-- Botón para ejecutar cambio -->
+        <button id="btn-change">Cambiar rol</button>
+      </div>
+
+      <!-- Tabla donde mostramos usuarios -->
+      <table id="tbl" style="display:none">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Creado</th>
+            <th>Fails</th>
+            <th>Lock until</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+
+      <!-- Salida textual (mensajes/respuestas) -->
+      <pre id="out"></pre>
+    </div>
+  </div>
+
+  <!-- Cargamos JS externo (evita CSP) -->
+  <script src="/admin.js" defer></script>
+</body>
+</html>

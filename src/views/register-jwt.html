@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Codificación para caracteres latinos -->
+  <meta charset="UTF-8" />
+  <!-- Título del documento -->
+  <title>Registro (JWT)</title>
+</head>
+<body>
+  <!-- Encabezado de la página -->
+  <h2>Registro (JWT)</h2>
+
+  <!-- Formulario de registro -->
+  <form id="form-register">
+    <!-- Campo email -->
+    <label>Email:</label><br />
+    <input type="email" id="email" required /><br /><br />
+
+    <!-- Campo contraseña -->
+    <label>Contraseña:</label><br />
+    <input type="password" id="password" required /><br /><br />
+
+    <!-- Selector de rol (opcional) -->
+    <label>Rol (opcional):</label><br />
+    <select id="role">
+      <option value="">(por defecto: user)</option> <!-- Si queda vacío, el backend usará 'user' -->
+      <option value="user">user</option>            <!-- Rol user explícito -->
+      <option value="admin">admin</option>          <!-- Rol admin (solo si ALLOW_ADMIN_REG=true) -->
+    </select><br /><br />
+
+    <!-- Botón de envío -->
+    <button type="submit">Registrarse</button>
+  </form>
+
+  <!-- Zona para imprimir la respuesta del servidor -->
+  <pre id="result"></pre>
+
+  <!-- Importamos JS externo (evita bloqueo por CSP/Helmet) -->
+  <script src="/register-jwt.js" defer></script>
+</body>
+</html>
+

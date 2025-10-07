@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>PassPort Inc — Demo Auth</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #0b1020; color: #e9edf5; }
+    .wrap { max-width: 880px; margin: 40px auto; padding: 24px; }
+    .card { background: #121a2f; border: 1px solid #223054; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    p  { margin: 0 0 18px; color: #93a0bb; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 12px; }
+    .btn {
+      display: block; width: 100%; text-align: left;
+      background: #0f1830; border: 1px solid #223054; border-radius: 14px;
+      padding: 16px; text-decoration: none; color: #e9edf5; transition: transform .08s, background .2s, border-color .2s;
+    }
+    .btn:hover { transform: translateY(-2px); background: #0e1a3a; border-color: #2d467a; }
+    .btn strong { display: block; font-size: 16px; margin-bottom: 6px; }
+    .btn small  { display: block; color: #93a0bb; }
+    .foot { margin-top: 18px; font-size: 12px; color: #93a0bb; }
+    textarea { width: 100%; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .mini { font-size:12px; opacity:.9 }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>PassPort Inc — Demo de Autenticación</h1>
+      <p>Elegí un flujo para probar. Cada opción te lleva a un view específico.</p>
+
+      <div class="grid">
+        <a class="btn" href="/register-cookie.html">
+          <strong>Registro (Cookies)</strong>
+          <small>Crear usuario y luego iniciar sesión con cookie de sesión.</small>
+        </a>
+
+        <a class="btn" href="/login-cookie.html">
+          <strong>Login (Cookies)</strong>
+          <small>Obtiene <code>sid</code> y <code>csrfToken</code> en cookies.</small>
+        </a>
+
+        <a class="btn" href="/register-jwt.html">
+          <strong>Registro (JWT)</strong>
+          <small>Recibe un <code>access_token</code> (JWT) de respuesta.</small>
+        </a>
+
+        <a class="btn" href="/login-jwt.html">
+          <strong>Login (JWT)</strong>
+          <small>Inicia sesión y copia el token para probar endpoints protegidos.</small>
+        </a>
+      </div>
+
+      <!-- Probadores rápidos (requieren fetch JS) -->
+      <div class="row">
+        <label class="mini">
+          Token JWT (para /me-jwt o admin-jwt):
+          <br />
+          <textarea id="jwt" rows="3" placeholder="Pega aquí tu access_token"></textarea>
+        </label>
+      </div>
+
+      <div class="grid" style="margin-top:8px;">
+        <a class="btn" href="#" id="btn-me-cookie">
+          <strong>Probar /me-cookie</strong>
+          <small>Requiere haber hecho login con cookies.</small>
+        </a>
+        <a class="btn" href="#" id="btn-me-jwt">
+          <strong>Probar /me-jwt</strong>
+          <small>Usa Authorization: Bearer &lt;token&gt;.</small>
+        </a>
+        <a class="btn" href="/admin.html">
+          <strong>Panel Admin (Ambos modos)</strong>
+          <small>Abre la vista /admin.html para listar usuarios y cambiar roles.</small>
+        </a>
+
+      </div>
+
+      <pre id="out" class="mini"></pre>
+
+      <div class="foot">
+        Tip: si /me-cookie devuelve 401, iniciá sesión en “Login (Cookies)”. Para /me-jwt pegá primero el token.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Evitamos inline handlers en botones; usamos addEventListener.
+    const out = document.getElementById('out');
+    async function call(path, useCookies=false, useJWT=false) {
+      const headers = {};
+      if (useJWT) {
+        const token = document.getElementById('jwt').value.trim();
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+      }
+      const res = await fetch(path, {
+        method: 'GET',
+        headers,
+        credentials: useCookies ? 'include' : 'same-origin'
+      });
+      const text = await res.text();
+      try { out.textContent = `GET ${path} — ${res.status}\n\n` + JSON.stringify(JSON.parse(text), null, 2); }
+      catch { out.textContent = `GET ${path} — ${res.status}\n\n` + text; }
+    }
+
+    document.getElementById('btn-me-cookie').addEventListener('click', (e) => {
+      e.preventDefault(); call('/me-cookie', true, false);
+    });
+    document.getElementById('btn-me-jwt').addEventListener('click', (e) => {
+      e.preventDefault(); call('/me-jwt', false, true);
+    });
+    document.getElementById('btn-admin-cookie').addEventListener('click', (e) => {
+      e.preventDefault(); call('/admin/users-cookie', true, false);
+    });
+    document.getElementById('btn-admin-jwt').addEventListener('click', (e) => {
+      e.preventDefault(); call('/admin/users-jwt', false, true);
+    });
+  </script>
+</body>
+</html>

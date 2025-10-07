@@ -1,0 +1,315 @@
+🧠 1. Sesiones
+
+Qué son:
+Mecanismo para mantener el estado entre el cliente y el servidor después de un login.
+El servidor guarda un registro en una base de datos (ej. sessions) y envía al cliente un identificador único (session ID) dentro de una cookie.
+
+Cómo funciona:
+
+El usuario inicia sesión → el servidor genera un sid.
+
+El sid se guarda en la base con info del usuario, expiración y token CSRF.
+
+El navegador guarda el sid en una cookie.
+
+En cada petición, el navegador envía la cookie → el servidor identifica al usuario.
+
+Ventajas:
+
+Permite invalidar sesiones (logout).
+
+Facilita manejo centralizado (DB).
+
+Desventajas:
+
+Requiere guardar estado en el servidor.
+
+No es ideal para APIs sin estado.
+
+🔑 2. JWT (JSON Web Token)
+
+Qué es:
+Es un token en formato JSON firmado digitalmente (no cifrado) que representa información del usuario (ej. su id y rol).
+Ejemplo: Authorization: Bearer <token>.
+
+Partes:
+
+Header: tipo de token y algoritmo (HS256)
+
+Payload: datos del usuario (claims: sub, role, exp, etc.)
+
+Signature: hash firmado con una clave secreta (para verificar integridad).
+
+Ventajas:
+
+No requiere guardar sesiones en el servidor (autenticación sin estado).
+
+Ideal para APIs REST.
+
+Desventajas:
+
+No se puede invalidar fácilmente hasta que expire.
+
+No se deben guardar datos sensibles dentro.
+
+En este proyecto:
+
+Usamos jsonwebtoken con HS256 y un TTL de 15 minutos.
+
+El payload tiene { sub: id, role: 'user'|'admin' }.
+
+🍪 3. Cookies
+
+Qué son:
+Pequeños datos que el servidor guarda en el navegador del cliente para mantener información entre peticiones (por ejemplo, la sesión).
+
+Tipos usados aquí:
+
+sid (session ID): identifica la sesión activa.
+
+csrfToken: token usado para protección CSRF.
+
+Propiedades importantes:
+
+HttpOnly: evita que el JS del cliente lea la cookie (mitiga XSS).
+
+Secure: solo se envía por HTTPS (en dev lo dejamos en false).
+
+SameSite: previene envío desde otros dominios (mitiga CSRF).
+
+Ventajas:
+
+Persistentes (pueden durar varios días).
+
+Desventajas:
+
+Si no se configuran correctamente, son vulnerables a ataques.
+
+🧂 4. Hashing (bcrypt)
+
+Qué es:
+Proceso unidireccional que convierte una contraseña en un hash irreversible.
+No se puede recuperar la contraseña original a partir del hash.
+
+En este proyecto:
+
+Usamos bcryptjs con 12 rondas de encriptación.
+
+Las contraseñas se guardan solo como hash.
+
+En login, se compara usando bcrypt.compare().
+
+🔒 5. Cifrado
+
+Qué es:
+Transformar datos legibles en ilegibles usando una clave.
+A diferencia del hashing, el cifrado es reversible (se puede descifrar).
+
+Uso aquí:
+
+No ciframos contraseñas (solo las hasheamos).
+
+Pero los JWT están firmados, no cifrados, para garantizar integridad.
+
+🧱 6. CSRF (Cross-Site Request Forgery)
+
+Qué es:
+Ataque donde un sitio malicioso hace que el navegador del usuario envíe solicitudes a otro sitio en el que está autenticado (usando sus cookies).
+
+Ejemplo:
+Si un usuario está logueado en PassPort, una página externa podría intentar enviar un POST /admin/delete usando sus cookies sin permiso.
+
+Prevención (Double Submit Cookie):
+
+El servidor envía una cookie csrfToken + guarda ese token en DB.
+
+El cliente debe enviar ese valor también en el encabezado X-CSRF-Token.
+
+El servidor compara cookie vs header; si no coinciden → bloquea la petición.
+
+En este proyecto:
+
+Cada sesión tiene su propio token CSRF.
+
+Middleware verifyCsrf valida token en todas las rutas sensibles.
+
+⚔️ 7. XSS (Cross-Site Scripting)
+
+Qué es:
+Inyección de código JavaScript malicioso en el navegador del usuario (por ejemplo, al mostrar un comentario sin sanitizar).
+
+Ejemplo:
+<script>alert('hack');</script> inyectado en un formulario.
+
+Prevención:
+
+Escapar o filtrar entradas del usuario.
+
+Usar cookies HttpOnly (evita robo de sesión).
+
+Helmet añade cabeceras de seguridad (X-XSS-Protection, CSP).
+
+En este proyecto:
+
+No se permite ejecución de JS inline (salvo en dev).
+
+Helmet se usa para mitigar XSS y otras amenazas comunes.
+
+🧱 8. RBAC (Role-Based Access Control)
+
+Qué es:
+Mecanismo para controlar qué acciones o rutas puede ejecutar cada usuario según su rol.
+
+Roles en este proyecto:
+
+user: acceso a datos propios.
+
+admin: puede listar usuarios y cambiar roles.
+
+Cómo se aplica:
+Middleware requireRole('admin') verifica el campo role del usuario antes de permitir acceso a rutas protegidas.
+
+🧨 9. Protección contra Fuerza Bruta
+
+Qué es:
+Mecanismo para evitar múltiples intentos de login con contraseñas incorrectas.
+
+Implementación:
+
+Contador failed_attempts en la tabla users.
+
+A los 5 intentos fallidos, el usuario se bloquea 15 minutos (lock_until).
+
+En login correcto, se resetea el contador.
+
+🧢 10. Cabeceras HTTP de Seguridad
+
+Qué son:
+Configuraciones en las respuestas HTTP que aumentan la seguridad del navegador.
+
+Ejemplos (usadas con Helmet):
+
+X-Content-Type-Options: nosniff
+
+X-Frame-Options: DENY
+
+Strict-Transport-Security
+
+Content-Security-Policy (CSP)
+
+En este proyecto:
+
+En desarrollo, CSP está desactivada (contentSecurityPolicy:false) para permitir scripts externos.
+
+En producción, se debe habilitar con una whitelist de scripts confiables.
+
+🧩 11. Double Submit Cookie (CSRF Token Pattern)
+
+Qué es:
+Estrategia para prevenir CSRF sin guardar el token en sesión del servidor.
+
+Cómo funciona:
+
+El servidor genera un token CSRF y lo envía en una cookie.
+
+El cliente debe reenviar ese token como header en cada petición.
+
+El servidor compara ambos valores (cookie y header).
+
+Ventaja:
+Compatible con APIs sin estado y sesiones almacenadas en DB.
+
+🧍‍♂️ 12. Autenticación vs Autorización
+
+Autenticación:
+Verifica quién eres (login con email y contraseña).
+
+Autorización:
+Verifica qué puedes hacer (rol: user o admin).
+
+💾 13. SQLite y better-sqlite3
+
+SQLite:
+Base de datos ligera que guarda toda la información en un único archivo .db.
+
+better-sqlite3:
+Módulo rápido y sincrónico para manejar SQLite desde Node.js.
+
+Ventajas:
+
+No requiere servidor externo.
+
+Ideal para prototipos o MVPs.
+
+Uso aquí:
+
+Guardamos users y sessions.
+
+Ejecutamos queries preparadas con db.prepare().
+
+🧰 14. Helmet
+
+Qué es:
+Middleware que agrega cabeceras de seguridad HTTP.
+
+Usos:
+
+Mitigar XSS, clickjacking, sniffing, etc.
+
+Configurar CSP (Content Security Policy).
+
+En este proyecto:
+
+En dev: contentSecurityPolicy:false para permitir JS externo.
+
+En prod: habilitar CSP para máxima protección.
+
+🔐 15. Authorization Header
+
+Qué es:
+Cabecera HTTP donde el cliente envía el token JWT.
+Ejemplo:
+
+Authorization: Bearer <token>
+
+
+Función:
+Permite identificar al usuario en APIs sin estado.
+
+En este proyecto:
+Se usa en /me-jwt, /admin/users-jwt y /admin/users/:id/role-jwt.
+
+🧩 16. CSRF + JWT
+
+Los JWT no son vulnerables a CSRF si no se guardan en cookies (se envían en headers).
+
+En este proyecto, los JWT se envían manualmente en Authorization, por lo tanto no necesitan token CSRF.
+
+🧹 17. Logout
+
+Cookies:
+Se eliminan sid y csrfToken, y se marca la sesión como revocada en DB.
+
+JWT:
+Basta con eliminar el token del cliente (no hay estado en el servidor).
+
+⚙️ 18. Content Security Policy (CSP)
+
+Qué es:
+Cabecera que define qué fuentes de scripts, estilos, imágenes, etc., puede cargar el navegador.
+
+Ejemplo:
+
+Content-Security-Policy: default-src 'self';
+
+
+En este proyecto:
+Desactivada en dev para permitir los scripts de /views/*.js.
+
+📊 19. Expiración y Revocación
+
+Sesiones (cookies):
+Expiran tras 7 días o al revocarse (revoked_at).
+
+JWT:
+Expiran automáticamente tras 15 minutos (exp claim).

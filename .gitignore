@@ -1,0 +1,63 @@
+# ============================================
+# PassPort Inc. — Proyecto Node.js + SQLite
+# ============================================
+
+# 🧠 Archivos del entorno / secretos
+.env
+*.env
+.env.local
+.env.development
+.env.production
+
+# 🗄️ Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+passport-inc.db
+
+# 🧰 Dependencias y compilados
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# 🧹 Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.temp
+
+# 🧪 Archivos de entorno local y tests
+.vscode/
+.idea/
+*.log
+coverage/
+.cache/
+.tmp/
+.env.test
+
+# 🧱 Archivos de compilación / builds (si aplicara)
+dist/
+build/
+
+# 🖼️ Archivos personales / capturas
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# 🚫 Backups / exportaciones
+*.bak
+*.old
+*.orig
+
+# 🧩 Archivos generados por VS Code o macOS
+.vscode/
+*.code-workspace
+
+# ============================================
+# Fin del .gitignore
+# ============================================
