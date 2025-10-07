@@ -20,6 +20,7 @@ registro, login, roles, seguridad con cookies o JWT, CSRF, hashing, control de f
 
 ## 🧩 Funcionalidades principales
 
+```
 | Funcionalidad                     | Descripción                                         |
 | --------------------------------- | --------------------------------------------------- |
 | 🧑‍💻 **Registro/Login con cookies** | Crea sesión persistente almacenada en DB.           |
@@ -30,6 +31,7 @@ registro, login, roles, seguridad con cookies o JWT, CSRF, hashing, control de f
 | 🧍‍♂️ **RBAC (Roles)**               | `user` y `admin` con rutas protegidas.              |
 | 🚫 **Fuerza bruta**               | 5 intentos → bloqueo temporal (15 min).             |
 | 🧠 **Cabeceras seguras**          | Helmet y cookies con flags seguras.                 |
+```
 
 ---
 
