@@ -48,7 +48,6 @@ registro, login, roles, seguridad con cookies o JWT, CSRF, hashing, control de f
       - `auth-cookie.js`
       - `auth-jwt.js`
       - `csrf.js`
-      - `rate-limit.js` _(opcional futuro)_
     - **routes/**
       - `auth-cookie.js`
       - `auth-jwt.js`

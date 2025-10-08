@@ -29,10 +29,11 @@ const app = express();                              // Instancia de Express
 app.use(helmet({ contentSecurityPolicy: false }));
 
 // --- CORS ---
+// Es un mecanismo de seguridad del navegador que controla desde qué dominios o puertos se puede acceder a tu servidor
 // Permitimos que el navegador envíe cookies (credentials: true) desde front local.
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8080'],
-  credentials: true
+  credentials: true // Permite que el navegador envíe y reciba cookies o cabeceras de autenticación entre dominios
 }));
 
 // --- Body parsers ---

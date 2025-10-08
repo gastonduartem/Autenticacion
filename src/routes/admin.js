@@ -54,7 +54,7 @@ router.patch(
         return res.status(400).json({ error: 'Rol inválido (solo user o admin)' });
       }
 
-      // No permitir que el admin se cambie a sí mismo (opcional)
+      // No permitir que el admin se cambie a sí mismo
       if (req.user.id === targetId) {
         return res.status(400).json({ error: 'No puedes cambiar tu propio rol' });
       }
